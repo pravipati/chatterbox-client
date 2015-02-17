@@ -16,9 +16,28 @@
     <div id="main">
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
-        <input type="text"></input>
-        <button class="submitButton">Send Message!</button>
+      <input type="text"></input>
+      <button class="submitButton">Send Message!</button>
+      <button class="lobbyButton">Lobby</button>
       <div class="container"></div>
+      <div class="lobby"></div>
     </div>
   </body>
+  <script>
+    // connects button to input field and sends message to server
+    $('.submitButton').click(function(){
+      var chatMessage = $('input').val();
+      var username = window.location.search.slice(window.location.search.indexOf("=")+1);
+      var message = {
+        username: username,
+        text: chatMessage,
+        roomname: "general"
+      }
+      app.send(message);
+      $('input').val("");
+    });
+
+    $('.lobby').hide();
+    $
+  </script>
 </html>

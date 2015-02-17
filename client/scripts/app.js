@@ -19,6 +19,7 @@ app.send = function(message){
   });
 };
 
+
 app.fetch = function(){
   $.ajax({
   // always use this url
@@ -28,14 +29,8 @@ app.fetch = function(){
   	order: '-createdAt'
   },
   contentType: 'application/json',
-  success: function (data) {
-  	var recentChats = data.results;
-  	var count = 0;
-  	setInterval(function(){
-  		placeChats((recentChats[count].username ? recentChats[count].username : "NO USER ID")+": "+ recentChats[count].text);
-  		count++;
-  		$('div').length > 12 ? $('div').last().remove() : null;
-  	}, 2000);
+  success: function(data){
+  	showChat(data);
   },
   error: function (data) {
     // see: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -44,15 +39,27 @@ app.fetch = function(){
   });
 };
 
-var placeChats = function(chat){
+var showChat = function (data) {
+	//store most recent message
+	var recentChats = data.results;
+	var chatMessage = (recentChats[0].username ? recentChats[0].username : "NO USER ID") + ": " + recentChats[0].text
+    //check the room 
+    if ( !recentChats[0].roomname ) {
+	  console.log(recentChats[0].roomname);
+	  placeChats(chatMessage);	
+    }
+    else if (recentChats[0].roomname === "lobby") {
+      placeChats(chatMessage, ".lobby")
+    }
+
+    console.log(recentChats[0].roomname);
+	$('div').length > 12 ? $('.msg').last().remove() : null;
+};
+
+var placeChats = function(chat, room){
+	room = room || ".container";
 	var chatDiv = "<div class='chat msg'>"+_.escape(chat)+"</div>"
-	$(chatDiv).hide().prependTo(".container").fadeIn();
+	$(chatDiv).hide().prependTo(room).fadeIn();
 }
 
-app.fetch();
-
-$('.submitButton').click(function(){
-  var chatMessage = $('input').val();
-  alert(chatMessage);
-  $('input').val("")
-})
+setInterval(app.fetch, 1000);
